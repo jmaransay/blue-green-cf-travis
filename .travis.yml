@@ -1,26 +1,28 @@
 language: node_js
-
 node_js:
-  - "8.9.4"
-
+- 8.9.4
 before_deploy:
-  - echo "Installing cf cli"
-  - test x$TRAVIS_OS_NAME = "xlinux" && rel="linux64-binary" || rel="macosx64"; wget "https://cli.run.pivotal.io/stable?release=${rel}&source=github" -qO cf.tgz && tar -zxvf cf.tgz && rm cf.tgz
-  - export PATH="$PATH:."
-  - cf --version
- 
-  - echo "Installing cf blue-green deploy plugin"
-  - cf add-plugin-repo CF-Community https://plugins.cloudfoundry.org
-  - cf install-plugin blue-green-deploy -r CF-Community -f
-  - export DEPLOY_TIMESTAMP=`date +'%Y%m%d-%H%M%S'`
-
+- echo "Installing cf cli"
+- test x$TRAVIS_OS_NAME = "xlinux" && rel="linux64-binary" || rel="macosx64"; wget
+  "https://cli.run.pivotal.io/stable?release=${rel}&source=github" -qO cf.tgz && tar
+  -zxvf cf.tgz && rm cf.tgz
+- export PATH="$PATH:."
+- cf --version
+- echo "Installing cf blue-green deploy plugin"
+- cf add-plugin-repo CF-Community https://plugins.cloudfoundry.org
+- cf install-plugin blue-green-deploy -r CF-Community -f
+- export DEPLOY_TIMESTAMP=`date +'%Y%m%d-%H%M%S'`
 deploy:
-  # on update to master branch we deploy to Cloud Foundry
-  - provider: script
-    skip_cleanup: true
-    script:  ./scripts/cf-blue-green-deploy.sh blue-green-cf-travis manifest.yml prod
-    on:
-      branch: master
-
+- provider: script
+  skip_cleanup: true
+  script: "./scripts/cf-blue-green-deploy.sh blue-green-cf-travis manifest.yml prod"
+  on:
+    branch: master
 after_script:
-  - echo "Run your full suite of automated regression tests here"
+- echo "Run your full suite of automated regression tests here"
+env:
+  global:
+  - secure: DjZ7D7R27fJ29g29z+DLwC0xGD2i+MGH2jCbMx75iNTzZBg0QBxGtaPc6X/xHyAyfX4+Tb13VQNGCcmAfIphyKiU7Rx1tCuRjMTc4ztGmaFwjO8qyM7Pf3UfcI1mq/7FYbuz/ZkyKncD+ju1KvyFzSlI8i9xrrcr8Ik1LUSztIz/7e/rRNrrRHwEGgBnct15kCC1lYOkWNXGrtaA4mzgq2sm4Xja54ku4z++alTw88FP+atJNKFjVO2E1H8lIUwaeRX5tD07PvYIAMIaig+P/yXBBjY2M4HjI55FOaQiN+ddpbyGGMAfB9WRiT3hf6W6gGJHVMNYZyKrXcmoZcWRSqcnW/d4GzUZd9zq080YJtZzQSBrDO7/K0sjkKEghUvH9RKyeGpOKmacT+bf/v5X3quYeKHZ+w/QfypHvvpUSyObzo2vetdAIsQ8QpCcKmg9Td0P9ofa2JEFwr8ScDypq6D07w/yehSGKJuRBds6L497BqjFsr2uPjZGYqr1tNIVZEnfWZVTbP0iW9lZMwhjr1mdazgb0+k71sGstG8UOMoNUefZTNPw5Ma/M+htBBgFy9doc1FqBupptoO0EEcHf2aOkHbAbu70Pw8X6Z0PBWrxXDJZZprCcu4ln6Ab2V22lSyUP8Retcc4q3bAGQsVh5W9566Jfzrlv53/vd46Xrc=
+  - secure: H28siZOup6mNwdWlrURC1UdRCgSvYz97xB7F4YGX3Vvnbu13hDhumLxhSxi5AZsnapzjIhRVXxl1/qI6wwlxsvSe50mPGE9EkiQ5XR2C/jtolf3LRP2ZpX8I4IVbC5SviV8weJuvJWLyIQSGaFECDGfqM0MStjehzHC7ufjvcLIqDzyZ3QOJHNvn+3OnFHq/anSs73S6+zp1TkwivjYGrb0aGFNClHVHyideYNNOlHFKjjkQjPAvrWRUwEgNhI8D/smil3P+4j+Rp3pTts4Ck/WX0ALL7aq0ziVKJclfaWpAathnCRpQnUFXdw/qqeQL1+FY+ISR4wtFcZyzMRBXSIFefcP4M/DZeXMIQBrDRnkE730ZCJ2BBrEj+aHCyzGg4AAmbaP5Rt8riCc9PlmVxagqKXMyVQ5qKIPZoF6kHhN9tQyJ9tutbzZOja7ZhDk5q/aEGr+5nxjX1zpqd5UVvaMxXRTLDDLI/VxGfsKFO9QqWJLNWYk9L293sVKfc3ermfERK0NnyAAMnCfirXdokW8SHrIkYTN2o+MRIrRciYj4z8XAHprzDSL22j0dLJ7wByQCB1RvMFJgb5aeT7/76VX171Mq5lEI0ihSCijnp5zP24HvoPatBBqljmO5yrYj3J8yBbPAzkCwlTuPNc4UJcCfQd08x8svFNj/JpqzT1c=
+  - secure: PHPc1rVC+PVvBkPqD6P704kza3ZlSyOwdN4ACtFMIs6v/FDNDdzh6zOf2DowkXg4Nc2YVX//K/QddT+pJc6Am+V2LRqf/ECd61l/4n5ymqIQWMCs8mKISQ6g/oGlnLTHx3c3ZWPYmzNaRwv588NHXyayDcViCG7ymBlPHPB4MzSWL/tcL7muZOTNO6tj/mnA5gzArUcB4dKqML3RBc+frVE+oRedhodkV+uzK8MmPfHRXN9IZT0fAzmZ/H2cf0lmGokm50oTs2HrlEC+PvMlbYtpNem8WsilJAP/auoAXRxC6woqqTOiczYcejqPTjH7yugznm4jO6tiYQoTnG5ELtSpObNugUwCHjXBGHeBBp5fd4r2VnCGLI6Zm3jZW0+Q4cRsI+mKa7kDaGCxg5JNc38FMHYuSKk3LvEeKlpQzPtdIX/UORk3+spvMDf0Dl9n+JvgXuNybnGMctOTBWkGK2DRPvkNNQx8hp7mhuxDd+/h+r2QgaM1FFXH0KZZDuiO1/iTjXIB+1bIRS0AO7DsIuqP3tafu9VA3nWYp3zHs3TMCRb379dTSrNxfwOO5G5Nane9ayoWUbNgbJM5eSmnigdXxEfH0jEQbKbrpLx4qgNQphkBTr7gsGGWdvJUZ1Qy3UX0DVWov1RM4kkiOm365g2BRaHAIrryYqmSNvzrHRs=
+  - secure: MCfduqy1X8jDrX1bGxX1jFuKBA750MmXhtRAQug7reOPENurExbwe6hHZDDDYOOeiTnyUDyD/0I6wjm+kjr8O66FRbQBfKqqiFCeiXuXB5eKOuAfRRYxsv+KRPT1Dk0hioqt7avhCmFN8Dd/y37mjGRqo/yhz3Jp+7vyLEVXq0XSLzUurLiKACAPb9OpYmL/mxm7QNjx63Tc6fAlUcqjCyk0DrXtam8z7/uVAmDreslHepNTnPlmtmhxw7Xs7N4E+J6xo3jA1LNKHjthsdVscCE7+2YgMoBqMalCEgb+uTWOVjSrk9uBuqtba1yH00/jqEmftL0wTsYJERkIQQIjo0Veto4/WBaO0/JotTn2EjoGDPbiLUBrNGKv1Ir0Y5j79B1IBZZkOnx+cwchHQKD9DMJQ/+e2s86foj/YeYVNPiI5+/nZp26JIpQ6840wftnGdjslHHuc4nprfkq6lGB7GdDV8HBNmyeUES/UZJJDv3EHvACyjVFgE0eI0ADYoTrlc3Q4oJG0iXp33ufzr47wLhtgfgyvetyKjS9aC76TvT5UF7JFhsdmn76iFCI1VeLsqEqwlGfZXwebNLUV3YQog229nXpYkNjE8tNaLbqYSlldJr79a7hAmWt7eAPu2fJDK+0gF+2CyBlDfxqj0mIAvKDQjf1lAtLrStee9dQXao=
